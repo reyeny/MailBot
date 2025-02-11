@@ -1,7 +1,5 @@
-﻿using MailBot.Controllers;
-using MailBot.Models;
+﻿using MailBot.Models;
 using MailBot.Services;
-using MailBot.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,10 +28,14 @@ catch (Exception e)
 
 // Настройки для телеграм бота
 var botToken = builder.Configuration["Telegram:BotToken"];
-var botRunner = new BotController(botToken!);
-await botRunner.Start();
+builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(botToken!));
 
-
+const long chatId = 725591578; 
+builder.Services.AddTransient<NotificationService>(sp =>
+{
+    var botClient = sp.GetRequiredService<ITelegramBotClient>();
+    return new NotificationService(botClient, chatId);
+});
 
 // Создаём приложение
 var app = builder.Build();

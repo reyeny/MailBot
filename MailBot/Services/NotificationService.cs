@@ -1,16 +1,18 @@
 using Telegram.Bot;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace MailBot.Services;
-
-public class NotificationService(ITelegramBotClient botClient, long chatId)
+namespace MailBot.Services
 {
-    
-    [Obsolete("Obsolete")]
-    public async Task NotifyAsync(string notificationText, CancellationToken cancellationToken)
+    public class NotificationService(ITelegramBotClient botClient, long chatId)
     {
-        await botClient.SendTextMessageAsync(
-            chatId: chatId,
-            text: notificationText,
-            cancellationToken: cancellationToken);
+        [Obsolete("Obsolete")]
+        public async Task NotifyAsync(string message, CancellationToken cancellationToken)
+        {
+            await botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: message,
+                cancellationToken: cancellationToken);
+        }
     }
 }
