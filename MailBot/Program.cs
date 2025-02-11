@@ -1,39 +1,44 @@
-﻿using MailBot.Models;
+﻿using MailBot.Controllers;
+using MailBot.Models;
 using MailBot.Services;
-using MailKit.Net.Imap;
+using MailBot.Services.Interfaces;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Telegram.Bot;
 
-namespace MailBot
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>()
+    .AddEnvironmentVariables();
+builder.Services.AddControllers();
+
+
+// Регистрируем настройки для почты
+try
 {
-    internal class Program
-    {
-        public static async Task Main(string[] args)
-        {
-            var host = Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((_, config) =>
-                {
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                        .AddUserSecrets<Program>()
-                        .AddEnvironmentVariables();
-                })
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.Configure<MailSettings>(hostContext.Configuration.GetSection("MailSettings"));
-                    services.AddTransient<ImapClient>(_ => new ImapClient());
-                    services.AddHostedService<MailPollingService>();
-                })
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddConsole();
-                })
-                .Build();
-
-            // Запускаем приложение
-            await host.RunAsync();
-        }
-    }
+    builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+    builder.Services.AddTransient<MailKit.Net.Imap.ImapClient>(_ => new MailKit.Net.Imap.ImapClient());
+    builder.Services.AddHostedService<MailPollingService>();
 }
+catch (Exception e)
+{
+    Console.WriteLine(e);
+    throw;
+}
+
+// Настройки для телеграм бота
+var botToken = builder.Configuration["Telegram:BotToken"];
+var botRunner = new BotController(botToken!);
+await botRunner.Start();
+
+
+
+// Создаём приложение
+var app = builder.Build();
+
+// Настраиваем маршруты для контроллеров
+app.MapControllers();
+
+app.Run();
