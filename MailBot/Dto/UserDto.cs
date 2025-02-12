@@ -1,9 +1,8 @@
-namespace MailBot.Models.User;
+namespace MailBot.Dto;
 
-public class User
+public class UserDto
 {
     public Guid Id { get; set; }
     public Guid[] UserMailId { get; set; }
-    public UserMail[] UserMails { get; set; }
     public long chatId { get; set; }
 }

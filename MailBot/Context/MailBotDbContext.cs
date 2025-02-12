@@ -1,12 +1,10 @@
 using MailBot.Models.User;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using User = MailBot.Models.User.User;
 
-namespace MailBot.Context.MailController;
+namespace MailBot.Context;
 
-public class MailBotDbContext(DbContextOptions<MailBotDbContext> options)
-    : IdentityDbContext<User>(options)
+public class MailBotDbContext(DbContextOptions<MailBotDbContext> options) : DbContext(options)
 {
+    public DbSet<User> Users { get; set; }
     public DbSet<UserMail> UserMails { get; set; }
 }
