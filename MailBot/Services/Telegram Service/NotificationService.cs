@@ -1,8 +1,6 @@
 using Telegram.Bot;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace MailBot.Services
+namespace MailBot.Services.Telegram_Service
 {
     public class NotificationService(ITelegramBotClient botClient, long chatId)
     {

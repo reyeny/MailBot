@@ -1,6 +1,12 @@
-﻿using MailBot.Models;
+﻿using MailBot.Context;
+using MailBot.Context.MailController;
+using MailBot.Models;
+using MailBot.Models.User;
 using MailBot.Services;
+using MailBot.Services.Telegram_Service;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
@@ -11,6 +17,20 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnCh
     .AddUserSecrets<Program>()
     .AddEnvironmentVariables();
 builder.Services.AddControllers();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<MailBotDbContext>(opt => opt.UseNpgsql(connectionString));
+
+builder.Services.AddIdentity<User, IdentityRole>(options => {
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 6;
+    })
+    .AddEntityFrameworkStores<MailBotDbContext>()
+    .AddDefaultTokenProviders();
+
 
 
 // Регистрируем настройки для почты
