@@ -1,7 +1,7 @@
 ﻿using MailBot.Context;
 using MailBot.Models;
 using MailBot.Services;
-using MailBot.Services.Telegram_Service;
+using MailBot.Services.Telegram_Bot_Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
