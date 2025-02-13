@@ -14,8 +14,7 @@ namespace MailBot.Services
     public class MailPollingService(
         IOptions<MailSettings> mailSettingsOptions,
         ILogger<MailPollingService> logger,
-        ImapClient client,
-        NotificationService notificationService)
+        ImapClient client)
         : BackgroundService
     {
         private readonly MailSettings _mailSettings = mailSettingsOptions.Value;
@@ -90,7 +89,7 @@ namespace MailBot.Services
             var body = !string.IsNullOrEmpty(message.TextBody) ? message.TextBody : message.HtmlBody;
             var telegramMessage = $"Новый email:\nТема: {subject}\nСообщение: {body}";
             Console.WriteLine($"telegram: {telegramMessage}");
-            await notificationService.NotifyAsync(telegramMessage, token);
+            // await notificationService.NotifyAsync(telegramMessage, token);
         }
     }
 }

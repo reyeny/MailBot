@@ -126,20 +126,34 @@ public class UserCommandService
             cancellationToken: cancellationToken);
     }
     
-    private Task<Message> WaitForUserResponseAsync(long chatId, CancellationToken cancellationToken)
+    private async Task<Message> WaitForUserResponseAsync(long chatId, CancellationToken externalToken, int timeoutMilliseconds = 30000)
     {
         var tcs = new TaskCompletionSource<Message>(TaskCreationOptions.RunContinuationsAsynchronously);
         PendingResponses[chatId] = tcs;
     
-        cancellationToken.Register(() =>
+        // Создаем отдельный токен с таймаутом, не влияющий на внешний токен
+        using var timeoutCts = new CancellationTokenSource(timeoutMilliseconds);
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(externalToken, timeoutCts.Token);
+
+        linkedCts.Token.Register(() =>
         {
-            Console.WriteLine($"[Wait] Ожидание для чата {chatId} отменено.");
             tcs.TrySetCanceled();
+            PendingResponses.TryRemove(chatId, out _);
         });
+
+        Console.WriteLine($"[Wait] Ожидаю ответ от чата {chatId} (таймаут {timeoutMilliseconds} мс)...");
     
-        Console.WriteLine($"[Wait] Ожидаю ответ от чата {chatId}...");
-        return tcs.Task;
+        try
+        {
+            return await tcs.Task;
+        }
+        catch (TaskCanceledException)
+        {
+            Console.WriteLine($"[Wait] Время ожидания ответа от чата {chatId} истекло.");
+            throw;
+        }
     }
+
 
 }
 

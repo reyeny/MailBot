@@ -33,7 +33,6 @@ builder.Services.AddDbContext<MailBotDbContext>(opt => opt.UseNpgsql(connectionS
 builder.Services.AddControllers();
 builder.Services.AddSingleton<MailBotController>();
 builder.Services.AddSingleton<BotService>();
-builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddSingleton<UserCommandService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMailService, MailService>();
@@ -65,7 +64,6 @@ botClient.StartReceiving(
     receiverOptions,
     cts.Token);
 
-Console.WriteLine("Бот запущен. Для завершения работы нажмите любую клавишу...");
 Console.ReadKey();
 cts.Cancel();
 
