@@ -2,7 +2,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace MailBot.Services.Telegram_Services;
+namespace MailBot.Services.Telegram_Bot_Services;
 
 public class BotService
 {

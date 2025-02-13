@@ -24,15 +24,13 @@ namespace MailBot.Migrations
 
             modelBuilder.Entity("MailBot.Models.User.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
 
-                    b.Property<Guid[]>("UserMailId")
-                        .IsRequired()
-                        .HasColumnType("uuid[]");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("chatId")
+                    b.Property<long>("ChatId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -54,8 +52,8 @@ namespace MailBot.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -66,14 +64,13 @@ namespace MailBot.Migrations
 
             modelBuilder.Entity("MailBot.Models.User.UserMail", b =>
                 {
-                    b.HasOne("MailBot.Models.User.User", null)
-                        .WithMany("UserMails")
-                        .HasForeignKey("UserId");
-                });
+                    b.HasOne("MailBot.Models.User.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("MailBot.Models.User.User", b =>
-                {
-                    b.Navigation("UserMails");
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
