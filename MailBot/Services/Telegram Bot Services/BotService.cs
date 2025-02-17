@@ -11,6 +11,7 @@ public class BotService
         
     }
     
+    [Obsolete("Obsolete")]
     public void Command(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         var message = update.Message;
